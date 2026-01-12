@@ -1,18 +1,20 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
+import { UpdateUserDTO } from './domain/dto/updateUser.dto';
+import { CreateUserDto } from './domain/dto/createUser.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getUserbyId(id: string) {
+  async getUserbyId(id: string ) {
     const user = this.isIdExistis(id);
 
     return user;
   }
 
-  async createUser(body: any): Promise<User> {
+  async createUser(body: CreateUserDto): Promise<User> {
     return await this.prisma.user.create({ data: body });
   }
 
@@ -20,7 +22,7 @@ export class UserService {
     return await this.prisma.user.findMany();
   }
 
-  async updateUser(id: string, body: any) {
+  async updateUser(id: string, body: UpdateUserDTO) {
     await this.isIdExistis(id);
 
     return await this.prisma.user.update({ where: { id }, data: body });
