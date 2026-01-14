@@ -37,22 +37,38 @@ export class UserService {
       body.password = await this.hashPassword(body.password);
     }
 
-    return await this.prisma.user.update({ where: { id }, data: body, select: userSelectFields });
+    return await this.prisma.user.update({
+      where: { id },
+      data: body,
+      select: userSelectFields,
+    });
   }
 
   async deleteUser(id: string) {
     await this.isIdExistis(id);
 
-    return await this.prisma.user.delete({ where: { id }, select: userSelectFields });
+    return await this.prisma.user.delete({
+      where: { id },
+      select: userSelectFields,
+    });
   }
 
   async isIdExistis(id: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({ where: { id }, select: userSelectFields });
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: userSelectFields,
+    });
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
     return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    return await this.prisma.user.findUnique({
+      where: { email },
+    });
   }
 
   private async hashPassword(password: string) {
