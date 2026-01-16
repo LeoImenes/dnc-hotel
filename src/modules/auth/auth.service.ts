@@ -84,8 +84,9 @@ generateJWTToken(user: User, expiresIn: StringValue = '1d') {
     return token;
   }
 
-  private async validateToken(token): Promise<ValidateTokenDTO> {
+   async validateToken(token:string): Promise<ValidateTokenDTO> {
     try {
+      console.log('Validating token:', token);
       const decoded = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
         audience: 'users',

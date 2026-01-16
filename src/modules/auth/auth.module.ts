@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { PrismaModule } from '../prisma/prisma.module';
@@ -10,12 +10,12 @@ import { UserModule } from '../users/user.module';
   providers: [AuthService],
   exports: [AuthService],
   imports: [
-    UserModule,
+    forwardRef(() => UserModule),
     PrismaModule,
     JwtModule.registerAsync({
-        useFactory: () => ({
-          secret: process.env.JWT_SECRET,
-        }),
+      useFactory: () => ({
+        secret: process.env.JWT_SECRET,
+      }),
     }),
   ],
 })
