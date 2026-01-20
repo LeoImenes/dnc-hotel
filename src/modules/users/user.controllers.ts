@@ -17,12 +17,14 @@ import type { User as UserType } from '@prisma/client';
 import { Roles } from 'src/shared/decorators/roles.decorator';
 import { RoleGuard } from 'src/shared/guards/role.guard';
 import { UserMatchGuard } from 'src/shared/guards/userMatch.guard';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @UseGuards(AuthGuard, RoleGuard)
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
 
+  @UseGuards(ThrottlerGuard)
   @Get()
   getUsers(@User('email') user: UserType) {
     console.log(user);
@@ -45,7 +47,7 @@ export class UserController {
   updateUser(@ParamId() id: string, @Body() body: UpdateUserDTO) {
     return this.userService.updateUser(id, body);
   }
-  
+
   @UseGuards(UserMatchGuard)
   @Delete(':id')
   deleteUser(@ParamId() id: string) {

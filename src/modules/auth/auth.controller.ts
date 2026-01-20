@@ -23,6 +23,7 @@ export class AuthController {
 
   @Patch('reset-password')
   resetPassword(@Body() body: AuthResetDTO) {
+    console.log(body, 'body no controller');
     return this.authService.resetPassword(body);
   }
 
