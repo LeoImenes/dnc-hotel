@@ -16,6 +16,10 @@ export class UserService {
   }
 
   async createUser(body: CreateUserDto): Promise<User> {
+    const user = await this.getUserByEmail(body.email);
+    if (user) {
+      throw new HttpException('Email already in use', HttpStatus.BAD_REQUEST);
+    }
     body.password = await this.hashPassword(body.password);
 
     return await this.prisma.user.create({

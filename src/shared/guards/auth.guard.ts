@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
 
     const { valid, decoded } = await this.authService.validateToken(token);
 
-    console.log(decoded);
+    //console.log(decoded);
 
     if (!valid) return false;
 
