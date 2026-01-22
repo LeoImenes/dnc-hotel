@@ -5,6 +5,8 @@ import { UpdateUserDTO } from './domain/dto/updateUser.dto';
 import { CreateUserDto } from './domain/dto/createUser.dto';
 import * as bcrypt from 'bcrypt';
 import { userSelectFields } from '../prisma/utils/userSelectFields';
+import { join, resolve } from 'path';
+import { stat, unlink } from 'fs/promises';
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
@@ -73,6 +75,36 @@ export class UserService {
     return await this.prisma.user.findUnique({
       where: { email },
     });
+  }
+
+  async uploadAvatar(id: string, filename: string) {
+    const user = await this.getUserbyId(id);
+
+    const directory = resolve(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'avatars',
+    );
+
+    if (user.avatar) {
+      const userAvatarPath = join(directory, user.avatar);
+      const userAvatarFileExists = await stat(userAvatarPath);
+
+      if (userAvatarFileExists) {
+        // Delete the old avatar file
+        await unlink(userAvatarPath);
+      }
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: { avatar: filename },
+    });
+    return updatedUser;
   }
 
   private async hashPassword(password: string) {

@@ -44,6 +44,8 @@ export class AuthService {
   async login({ email, password }: AuthLoginDTO) {
     const user = await this.userService.getUserByEmail(email);
 
+    console.log(email, password);
+
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
