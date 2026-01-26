@@ -20,6 +20,24 @@ model User {
   avatar    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  hotels    Hotel[]
 
   @@map("users")
+}
+
+//1 user para varios Hoteis 1:N
+
+model Hotel {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  address     String
+  image       String
+  price       String
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("hotels")
 }
