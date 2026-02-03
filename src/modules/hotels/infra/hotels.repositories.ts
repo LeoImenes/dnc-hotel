@@ -3,6 +3,7 @@ import { CreateHotelDto } from '../domain/dto/create-hotel.dto';
 import { IHotelRepository } from '../domain/repositories/IHotel.repositories';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
+import { AllHotelsDto } from '../domain/dto/allHotels.dto';
 
 @Injectable()
 export class HotelsRepositories implements IHotelRepository {
@@ -24,7 +25,7 @@ export class HotelsRepositories implements IHotelRepository {
   findByName(hotelName: string): Promise<Hotel | null> {
     return this.prisma.hotel.findFirst({
       where: {
-        name: {contains: hotelName, mode: 'insensitive' },
+        name: { contains: hotelName, mode: 'insensitive' },
       },
     });
   }
@@ -48,7 +49,15 @@ export class HotelsRepositories implements IHotelRepository {
     return this.prisma.hotel.delete({ where: { id: hotelId } });
   }
 
-  findAll(): Promise<Hotel[]> {
-    return this.prisma.hotel.findMany();
+  async findAll(offset: number, limit: number): Promise<AllHotelsDto> {
+    const hotels =  await this.prisma.hotel.findMany({
+      take: limit,
+      skip: offset,
+      include: { owner: true },
+    });
+
+    const total = await this.prisma.hotel.count();
+
+    return {hotels, total};
   }
 }

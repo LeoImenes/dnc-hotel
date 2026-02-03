@@ -10,8 +10,12 @@ export class FindAllHotelsService {
     @Inject(HotelsRepositoriesToken)
     private readonly hotelsRepository: IHotelRepository,
   ) {}
-  
-  async findAll() {
-    return await this.hotelsRepository.findAll();
+
+  async findAll(page: number = 1, limit: number = 10) {
+    const offset = (page - 1) * limit;
+
+    const data = await this.hotelsRepository.findAll(offset, limit);
+
+    return { page, per_page: limit, data };
   }
 }

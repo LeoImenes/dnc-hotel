@@ -13,9 +13,26 @@ import { FindByNameHotelsService } from './services/findByName.service';
 import { FindByOwnerHotelsService } from './services/findByOwner.service';
 import { UserModule } from '../users/user.module';
 import { AuthModule } from '../auth/auth.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { v4 as uuid } from 'uuid';
+import { uploadHotelImageService } from './services/uploadImageHotel.service';
 
 @Module({
-  imports: [PrismaModule, UserModule, AuthModule],
+  imports: [
+    PrismaModule,
+    UserModule,
+    AuthModule,
+    MulterModule.register({
+      storage: diskStorage({
+        destination: './uploads/hotels',
+        filename: (req, file, cb) => {
+          const filename: string = `${uuid()}-${file.originalname}`;
+          return cb(null, filename);
+        },
+      }),
+    }),
+  ],
   controllers: [HotelsController],
   providers: [
     CreateHotelsService,
@@ -25,6 +42,7 @@ import { AuthModule } from '../auth/auth.module';
     RemoveHotelsService,
     FindByNameHotelsService,
     FindByOwnerHotelsService,
+    uploadHotelImageService,
     {
       provide: HotelsRepositoriesToken,
       useClass: HotelsRepositories,

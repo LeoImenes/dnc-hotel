@@ -1,6 +1,7 @@
 import { Hotel } from "@prisma/client";
 import { CreateHotelDto } from "../dto/create-hotel.dto";
 import { UpdateHotelDto } from "../dto/update-hotel.dto";
+import { AllHotelsDto } from "../dto/allHotels.dto";
 
 export interface IHotelRepository {
   create(hotelData: CreateHotelDto, ownerId: string): Promise<Hotel>;
@@ -9,5 +10,5 @@ export interface IHotelRepository {
   findByOwnerId(ownerId: string): Promise<Hotel | null>;
   update(hotelId: string, updateData: UpdateHotelDto): Promise<Hotel>;
   delete(hotelId: string): Promise<Hotel>;
-  findAll(): Promise<Hotel[]>;
+  findAll(offset: number, limit?: number): Promise<AllHotelsDto>;
 }

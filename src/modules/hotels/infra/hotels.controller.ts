@@ -8,6 +8,11 @@ import {
   Delete,
   UseGuards,
   Query,
+  UploadedFile,
+  ParseFilePipe,
+  FileTypeValidator,
+  MaxFileSizeValidator,
+  UseInterceptors,
 } from '@nestjs/common';
 import { HotelsService } from '../hotels.service';
 import { CreateHotelDto } from '../domain/dto/create-hotel.dto';
@@ -24,6 +29,10 @@ import { RoleGuard } from 'src/shared/guards/role.guard';
 import { Roles } from 'src/shared/decorators/roles.decorator';
 import { OwnerHotelGuard } from 'src/shared/guards/ownerHotel.guard';
 import { User } from 'src/shared/decorators/user.decorator';
+import { Max } from 'class-validator';
+import { uploadHotelImageService } from '../services/uploadImageHotel.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileValidationInterceptor } from 'src/shared/interceptors/fileValidation.interceptor';
 
 @UseGuards(AuthGuard, RoleGuard)
 @Controller('hotels')
@@ -36,6 +45,7 @@ export class HotelsController {
     private readonly removeHotelServices: RemoveHotelsService,
     private readonly findHotelByOwnerIdService: FindByOwnerHotelsService,
     private readonly findHotelByNameService: FindByNameHotelsService,
+    private readonly uploadHotelImageService: uploadHotelImageService,
   ) {}
 
   @Roles('ADMIN')
@@ -45,8 +55,11 @@ export class HotelsController {
   }
 
   @Get()
-  findAll() {
-    return this.findAllHotelsService.findAll();
+  findAll(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+  ) {
+    return this.findAllHotelsService.findAll(Number(page), Number(limit));
   }
 
   @Get('name')
@@ -64,6 +77,24 @@ export class HotelsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.findOneHotelServices.findOne(id);
+  }
+
+  @UseInterceptors(FileInterceptor('image'), FileValidationInterceptor)
+  @Patch('image/:hotelId')
+  uploadHotelImage(
+    @Param('hotelId') hotelId: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+         // new FileTypeValidator({ fileType: 'image/png' }),
+          // new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }),
+        ],
+      }),
+    )
+    image: Express.Multer.File,
+  ) {
+    console.log('Uploading image for hotel ID:', hotelId);
+    return this.uploadHotelImageService.update(hotelId, image.filename);
   }
 
   @UseGuards(OwnerHotelGuard)
