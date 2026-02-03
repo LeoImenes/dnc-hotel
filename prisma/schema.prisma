@@ -21,6 +21,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   hotels    Hotel[]
+  reservations Reservation[]
 
   @@map("users")
 }
@@ -36,8 +37,27 @@ model Hotel {
   price       String
   ownerId     String
   owner       User     @relation(fields: [ownerId], references: [id])
+  reservations Reservation[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@map("hotels")
+}
+
+//n:n Varios users para varios Hoteis e Varios Hoteis para varios users
+
+model Reservation {
+  id String @id @default(cuid())
+  userId String 
+  user User @relation(fields: [userId], references: [id])
+  hotelId String
+  hotel Hotel @relation(fields: [hotelId], references: [id])
+  checkIn DateTime
+  checkOut DateTime
+  total Float
+  approved Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reservations")
 }
