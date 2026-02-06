@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { IReservationsRepository } from "../domain/dto/repositories/Ireservations.repository";
+import { IReservationsRepository } from "../domain/repositories/Ireservations.repository";
 import { Reservation } from "@prisma/client";
 import { CreateReservationDto } from "../domain/dto/create-reservation.dto";
 

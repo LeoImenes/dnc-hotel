@@ -11,16 +11,22 @@ enum Role {
   USER
 }
 
+enum Status {
+  Pending
+  Approved
+  Cancelled
+}
+
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  password  String
-  role      Role     @default(USER)
-  avatar    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  hotels    Hotel[]
+  id           String        @id @default(cuid())
+  email        String        @unique
+  name         String?
+  password     String
+  role         Role          @default(USER)
+  avatar       String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  hotels       Hotel[]
   reservations Reservation[]
 
   @@map("users")
@@ -29,17 +35,20 @@ model User {
 //1 user para varios Hoteis 1:N
 
 model Hotel {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  address     String
-  image       String
-  price       String
-  ownerId     String
-  owner       User     @relation(fields: [ownerId], references: [id])
+  id           String        @id @default(cuid())
+  name         String
+  description  String?
+  address      String
+  image        String
+  checkIn      DateTime
+  checkOut     DateTime
+  status       Status        @default(Pending)
+  price        String
+  ownerId      String
+  owner        User          @relation(fields: [ownerId], references: [id])
   reservations Reservation[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@map("hotels")
 }
@@ -47,15 +56,15 @@ model Hotel {
 //n:n Varios users para varios Hoteis e Varios Hoteis para varios users
 
 model Reservation {
-  id String @id @default(cuid())
-  userId String 
-  user User @relation(fields: [userId], references: [id])
-  hotelId String
-  hotel Hotel @relation(fields: [hotelId], references: [id])
-  checkIn DateTime
-  checkOut DateTime
-  total Float
-  approved Boolean @default(false)
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  hotelId   String
+  hotel     Hotel    @relation(fields: [hotelId], references: [id])
+  checkIn   DateTime
+  checkOut  DateTime
+  total     Float
+  approved  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
