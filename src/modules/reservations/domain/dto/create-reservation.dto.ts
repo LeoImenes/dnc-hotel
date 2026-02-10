@@ -8,12 +8,16 @@ export class CreateReservationDto {
   hotelId: string;
 
   @IsString()
+  @IsOptional()
+  userId:string;
+  
+  @IsString()
   @IsNotEmpty()
-  checkInDate: string;
+  checkIn: string;
 
   @IsString()
   @IsNotEmpty()
-  checkOutDate: string;
+  checkOut: string;
 
   @IsEnum(Status)
   @IsOptional()

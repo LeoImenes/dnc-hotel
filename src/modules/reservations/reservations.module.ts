@@ -7,12 +7,18 @@ import { UserModule } from '../users/user.module';
 import { HotelsModule } from '../hotels/hotels.module';
 import { ReservationsRepository } from './infra/reservations.repository';
 import { ReservationRepositoriesToken } from './utils/repositoriesTokens';
+import { FindAllReservationsService } from './services/findAllReservations.service';
+import { FindByIdReservationsService } from './services/findByIdReservations.service';
+import { FindByUserReservationsService } from './services/findByUserReservations.service';
 
 @Module({
   imports: [PrismaModule, AuthModule, UserModule, HotelsModule],
   controllers: [ReservationsController],
   providers: [
     CreateReservationsService,
+    FindAllReservationsService,
+    FindByIdReservationsService,
+    FindByUserReservationsService ,
     { provide: ReservationRepositoriesToken, useClass: ReservationsRepository },
   ],
 })

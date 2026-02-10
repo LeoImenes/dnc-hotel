@@ -48,5 +48,6 @@ import { uploadHotelImageService } from './services/uploadImageHotel.service';
       useClass: HotelsRepositories,
     },
   ],
+  exports: [HotelsRepositoriesToken],
 })
 export class HotelsModule {}
