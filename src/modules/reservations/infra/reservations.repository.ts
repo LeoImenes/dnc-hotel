@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IReservationsRepository } from '../domain/repositories/Ireservations.repository';
 import { Reservation } from '@prisma/client';
-import { CreateReservationDto } from '../domain/dto/create-reservation.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 
 @Injectable()
@@ -33,6 +32,14 @@ export class ReservationsRepository implements IReservationsRepository {
     return this.prisma.reservation.create({
       data,
     });
+  }
+
+  updateReservation(id: string, body: any): Promise<Reservation> {
+    return this.prisma.reservation.update({ data: body, where: { id } });
+  }
+
+  deleteReservation(id: string): Promise<Reservation> {
+    return this.prisma.reservation.delete({ where: { id } });
   }
   // Repository methods would go here
 }

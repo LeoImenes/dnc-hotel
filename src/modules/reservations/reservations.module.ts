@@ -10,6 +10,8 @@ import { ReservationRepositoriesToken } from './utils/repositoriesTokens';
 import { FindAllReservationsService } from './services/findAllReservations.service';
 import { FindByIdReservationsService } from './services/findByIdReservations.service';
 import { FindByUserReservationsService } from './services/findByUserReservations.service';
+import { UpdateReservationsService } from './services/updateReservations.service';
+import { DeleteReservationsService } from './services/deleteReservations.service';
 
 @Module({
   imports: [PrismaModule, AuthModule, UserModule, HotelsModule],
@@ -18,7 +20,9 @@ import { FindByUserReservationsService } from './services/findByUserReservations
     CreateReservationsService,
     FindAllReservationsService,
     FindByIdReservationsService,
-    FindByUserReservationsService ,
+    FindByUserReservationsService,
+    UpdateReservationsService,
+    DeleteReservationsService,
     { provide: ReservationRepositoriesToken, useClass: ReservationsRepository },
   ],
 })

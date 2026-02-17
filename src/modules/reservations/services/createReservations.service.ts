@@ -7,6 +7,7 @@ import { HotelsRepositoriesToken } from 'src/modules/hotels/utils/repositoriesTo
 import type { IHotelRepository } from 'src/modules/hotels/domain/repositories/IHotel.repositories';
 import { differenceInDays, parseISO } from 'date-fns';
 import { Reservation } from '@prisma/client';
+import { validateCheckinDates } from '../utils/validateCheckinDates';
 
 @Injectable()
 export class CreateReservationsService {
@@ -23,11 +24,7 @@ export class CreateReservationsService {
     const checkOutDate = parseISO(data.checkOut);
     const daysOfStay = differenceInDays(checkOutDate, checkInDate);
 
-    if (checkInDate >= checkOutDate) {
-      throw new BadRequestException(
-        'Check-out date must be after check-in date.',
-      );
-    }
+    validateCheckinDates({checkInDate, checkOutDate});
 
     const hotel = await this.hotelsRepository.findById(data.hotelId);
 
