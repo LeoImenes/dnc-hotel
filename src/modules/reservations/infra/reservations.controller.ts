@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Get, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Get,
+  Patch,
+  Query,
+} from '@nestjs/common';
 import { CreateReservationDto } from '../domain/dto/create-reservation.dto';
 import { UpdateReservationDto } from '../domain/dto/update-reservation.dto';
 import { CreateReservationsService } from '../services/createReservations.service';
@@ -11,8 +19,10 @@ import { FindByUserReservationsService } from '../services/findByUserReservation
 import { UpdateReservationsService } from '../services/updateReservations.service';
 import { Roles } from 'src/shared/decorators/roles.decorator';
 import { RoleGuard } from 'src/shared/guards/role.guard';
+import { UpdateReservationsStatusService } from '../services/updateReservationsStatus.service';
+import { Status } from '@prisma/client';
 
-@UseGuards(AuthGuard,RoleGuard)
+@UseGuards(AuthGuard, RoleGuard)
 @Controller('reservations')
 export class ReservationsController {
   constructor(
@@ -21,6 +31,7 @@ export class ReservationsController {
     private readonly findByIdReservationsService: FindByIdReservationsService,
     private readonly findByUserReservationsService: FindByUserReservationsService,
     private readonly updateReservationService: UpdateReservationsService,
+    private readonly updateReservationStatus: UpdateReservationsStatusService,
   ) {}
 
   @Get('user')
@@ -54,9 +65,24 @@ export class ReservationsController {
     console.log(reservationId, body, 'UPDATE');
     return this.updateReservationService.execute(reservationId, body);
   }
+  @Roles('ADMIN')
+  @Patch('status/:id')
+  patchStatus(
+    @ParamId() reservationId: string,
+    @Body() body: UpdateReservationDto,
+  ) {
+    console.log(reservationId, body.status, 'UPDATE STATUS');
+    return this.updateReservationStatus.execute(
+      reservationId,
+      body.status as Status,
+    );
+  }
 
   @Get()
-  findAll() {
-    return this.findAllReservationsService.execute();
+  findAll(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+  ) {
+    return this.findAllReservationsService.execute(Number(page), Number(limit));
   }
 }

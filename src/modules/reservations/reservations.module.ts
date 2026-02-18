@@ -12,9 +12,11 @@ import { FindByIdReservationsService } from './services/findByIdReservations.ser
 import { FindByUserReservationsService } from './services/findByUserReservations.service';
 import { UpdateReservationsService } from './services/updateReservations.service';
 import { DeleteReservationsService } from './services/deleteReservations.service';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { UpdateReservationsStatusService } from './services/updateReservationsStatus.service';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UserModule, HotelsModule],
+  imports: [PrismaModule, AuthModule, UserModule, HotelsModule, MailerModule],
   controllers: [ReservationsController],
   providers: [
     CreateReservationsService,
@@ -23,6 +25,7 @@ import { DeleteReservationsService } from './services/deleteReservations.service
     FindByUserReservationsService,
     UpdateReservationsService,
     DeleteReservationsService,
+    UpdateReservationsStatusService,
     { provide: ReservationRepositoriesToken, useClass: ReservationsRepository },
   ],
 })

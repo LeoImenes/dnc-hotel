@@ -9,7 +9,9 @@ export class FindAllReservationsService {
     private readonly reservationsRepository: IReservationsRepository,
   ) {}
 
-  async execute() {
-    return await this.reservationsRepository.findAll();
+  async execute(page: number = 1, limit: number = 10) {
+    const offset = (page - 1) * limit;
+    const data = await this.reservationsRepository.findAll(offset, limit);
+    return { page, per_page: limit, data };
   }
 }
