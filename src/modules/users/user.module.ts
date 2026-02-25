@@ -14,21 +14,19 @@ import { GetUserByEmailService } from './services/getUsersByEmail.service';
 import { GetUserByIdService } from './services/getUsersById.service';
 import { UploadUserAvatarService } from './services/uploadUserAvatar.service';
 import { UpdateUserService } from './services/updateUser.service';
-import { UserService } from './user.services';
 import { UsersRepository } from './infra/users.repository';
 
 @Module({
   controllers: [UserController],
   providers: [
     CreateUserService,
-    UserService,
     DeleteUserService,
     GetAllUsersService,
     GetUserByEmailService,
     GetUserByIdService,
     UploadUserAvatarService,
     UpdateUserService,
-    {provide: 'UserRepositoryToken', useClass: UsersRepository}
+    { provide: 'UserRepositoryToken', useClass: UsersRepository },
   ],
   imports: [
     PrismaModule,
@@ -43,6 +41,14 @@ import { UsersRepository } from './infra/users.repository';
       }),
     }),
   ],
-  exports: [UserService],
+  exports: [
+    CreateUserService,
+    DeleteUserService,
+    GetAllUsersService,
+    GetUserByEmailService,
+    GetUserByIdService,
+    UploadUserAvatarService,
+    UpdateUserService,
+  ],
 })
 export class UserModule {}

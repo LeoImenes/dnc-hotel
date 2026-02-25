@@ -9,19 +9,23 @@ import { Role, User } from '@prisma/client';
 import { AuthLoginDTO } from './domain/dto/authLogin.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { UserService } from '../users/user.services';
 import { AuthRegisterDto } from './domain/dto/authRegister.dto';
 import { CreateUserDto } from '../users/domain/dto/createUser.dto';
 import { AuthResetDTO } from './domain/dto/authResetPassword.dto';
 import { ValidateTokenDTO } from './domain/dto/validateTokem.dto';
 import { StringValue } from 'ms';
 import { MailerService } from '@nestjs-modules/mailer';
+import { GetUserByEmailService } from '../users/services/getUsersByEmail.service';
+import { CreateUserService } from '../users/services/createUser.service';
+import { UpdateUserService } from '../users/services/updateUser.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly userService: UserService,
+    private readonly getUserByEmailService: GetUserByEmailService,
+    private readonly createUserService: CreateUserService,
+    private readonly updateUserService: UpdateUserService,
     private readonly mailerService: MailerService,
   ) {}
 
@@ -42,7 +46,7 @@ export class AuthService {
     };
   }
   async login({ email, password }: AuthLoginDTO) {
-    const user = await this.userService.getUserByEmail(email);
+    const user = await this.getUserByEmailService.execute(email);
 
     console.log(email, password);
 
@@ -60,7 +64,9 @@ export class AuthService {
       password: String(body.password),
       role: body.role ?? Role.USER,
     };
-    const user = await this.userService.createUser(newUser);
+    const user = await this.createUserService.execute(newUser);
+
+    
 
     return await this.generateJWTToken(user);
   }
@@ -72,13 +78,13 @@ export class AuthService {
 
     if (!valid) throw new UnauthorizedException('Invalid or expired token');
 
-    const user = await this.userService.updateUser(decoded.sub, { password });
+    const user = await this.updateUserService.execute(decoded.sub, { password });
 
     return this.generateJWTToken(user);
   }
 
   async forgotPassword(email: string) {
-    const user = await this.userService.getUserByEmail(email);
+    const user = await this.getUserByEmailService.execute(email);
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);

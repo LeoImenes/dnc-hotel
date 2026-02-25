@@ -9,7 +9,7 @@ import { differenceInDays, parseISO } from 'date-fns';
 import { Reservation } from '@prisma/client';
 import { validateCheckinDates } from '../utils/validateCheckinDates';
 import { MailerService } from '@nestjs-modules/mailer';
-import { UserService } from 'src/modules/users/user.services';
+import { GetUserByIdService } from 'src/modules/users/services/getUsersById.service';
 
 @Injectable()
 export class CreateReservationsService {
@@ -19,7 +19,7 @@ export class CreateReservationsService {
     @Inject(HotelsRepositoriesToken)
     private readonly hotelsRepository: IHotelRepository,
     private readonly mailerService: MailerService,
-    private readonly userService: UserService,
+    private readonly getUserByIdService: GetUserByIdService,
   ) {}
 
   async create(data: CreateReservationDto) {
@@ -45,7 +45,7 @@ export class CreateReservationsService {
       total: totalPrice,
     };
 
-    const hotelOwner = await this.userService.getUserbyId(hotel.ownerId);
+    const hotelOwner = await this.getUserByIdService.execute(hotel.ownerId);
 
     this.mailerService.sendMail({
       to: hotelOwner?.email,

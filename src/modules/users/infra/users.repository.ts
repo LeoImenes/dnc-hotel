@@ -5,7 +5,9 @@ import { IUserRepository } from '../domain/repositories/Iuser.repository';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { join, resolve } from 'path';
 import { stat, unlink } from 'fs/promises';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { userSelectFields } from 'src/modules/prisma/utils/userSelectFields';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersRepository implements IUserRepository {
@@ -29,18 +31,35 @@ export class UsersRepository implements IUserRepository {
     });
   }
 
+
   async createUser(body: CreateUserDto): Promise<User> {
+    const user = await this.getUserByEmail(body.email);
+    if (user) {
+      throw new HttpException('Email already in use', HttpStatus.BAD_REQUEST);
+    }
+    body.password = await this.hashPassword(body.password);
+
     return await this.prisma.user.create({
       data: body,
+      select: userSelectFields,
     });
   }
 
-  async updateUser(id: string, body: UpdateUserDTO): Promise<User> {
+
+  async updateUser(id: string, body: UpdateUserDTO) {
+    await this.getUserById(id);
+
+    if (body.password) {
+      body.password = await this.hashPassword(body.password);
+    }
+
     return await this.prisma.user.update({
       where: { id },
       data: body,
+      select: userSelectFields,
     });
   }
+
 
   async deleteUser(id: string): Promise<User> {
     return await this.prisma.user.delete({
@@ -76,5 +95,10 @@ export class UsersRepository implements IUserRepository {
       data: { avatar: filename },
     });
     return updatedUser;
+  }
+
+  
+    private async hashPassword(password: string) {
+    return await bcrypt.hash(password, 10);
   }
 }

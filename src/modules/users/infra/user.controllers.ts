@@ -12,7 +12,6 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { UserService } from '../user.services';
 import { CreateUserDto } from '../domain/dto/createUser.dto';
 import { UpdateUserDTO } from '../domain/dto/updateUser.dto';
 import { ParamId } from 'src/shared/decorators/paramid.decorator';

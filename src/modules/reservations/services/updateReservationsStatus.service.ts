@@ -8,7 +8,7 @@ import { HotelsRepositoriesToken } from 'src/modules/hotels/utils/repositoriesTo
 import type { IHotelRepository } from 'src/modules/hotels/domain/repositories/IHotel.repositories';
 import { Status } from '@prisma/client';
 import { MailerService } from '@nestjs-modules/mailer';
-import { UserService } from 'src/modules/users/user.services';
+import { GetUserByIdService } from 'src/modules/users/services/getUsersById.service';
 
 @Injectable()
 export class UpdateReservationsStatusService {
@@ -16,7 +16,7 @@ export class UpdateReservationsStatusService {
     @Inject(ReservationRepositoriesToken)
     private readonly reservationsRepository: IReservationsRepository,
     private readonly mailerService: MailerService,
-    private readonly userService: UserService,
+    private readonly getUserByIdService: GetUserByIdService,
   ) {}
   async execute(reservationId: string, status: Status) {
     const reservation =
@@ -27,7 +27,7 @@ export class UpdateReservationsStatusService {
     const lastReservation =
       await this.reservationsRepository.findById(reservationId);
 
-    const user = await this.userService.getUserbyId(reservation.userId);
+    const user = await this.getUserByIdService.execute(reservation.userId);
 
     if (!lastReservation) {
       throw new BadRequestException('Reservation not Found');
