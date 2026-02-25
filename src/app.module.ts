@@ -7,7 +7,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HotelsModule } from './modules/hotels/hotels.module';
 import { ReservationsModule } from './modules/reservations/reservations.module';
-
+import { RedisModule } from '@nestjs-modules/ioredis';
 @Module({
   imports: [
     PrismaModule,
@@ -36,6 +36,10 @@ import { ReservationsModule } from './modules/reservations/reservations.module';
     }),
     HotelsModule,
     ReservationsModule,
+    RedisModule.forRoot({
+      type: 'single',
+      url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+    }),
   ],
   controllers: [],
   providers: [
@@ -45,4 +49,6 @@ import { ReservationsModule } from './modules/reservations/reservations.module';
     },
   ],
 })
+
+
 export class AppModule {}

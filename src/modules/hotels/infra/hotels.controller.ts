@@ -33,6 +33,7 @@ import { Max } from 'class-validator';
 import { uploadHotelImageService } from '../services/uploadImageHotel.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileValidationInterceptor } from 'src/shared/interceptors/fileValidation.interceptor';
+import { Multer } from 'multer';
 
 @UseGuards(AuthGuard, RoleGuard)
 @Controller('hotels')
@@ -91,6 +92,7 @@ export class HotelsController {
         ],
       }),
     )
+    //@ts-ignore
     image: Express.Multer.File,
   ) {
     console.log('Uploading image for hotel ID:', hotelId);
